@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
-import { RotateCcw, Sparkles, BookOpen } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { RotateCcw, Sparkles, BookOpen, Volume2, VolumeX } from 'lucide-react';
 import { characters, events, resultText } from './gameData';
 import endingOverview from './assets/endings/ending-overview.png';
+import battleMusic from './assets/audio/battle.wav';
 import './style.css';
 
 const shuffleArray = (arr) => [...arr].sort(() => Math.random() - 0.5);
@@ -156,9 +157,38 @@ export default function App() {
   const [history, setHistory] = useState([]);
   const [round, setRound] = useState(1);
   const [result, setResult] = useState(null);
+  const [musicOn, setMusicOn] = useState(true);
+  const [volume, setVolume] = useState(0.45);
+  const audioRef = useRef(null);
 
   const ending = useMemo(() => getEnding(history), [history]);
   const activeBoss = event?.boss ? characters.find((c) => c.id === event.boss) : null;
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.volume = volume;
+
+    if (screen === 'game' && !ending && musicOn) {
+      const playPromise = audio.play();
+      if (playPromise?.catch) {
+        playPromise.catch(() => {
+          // 瀏覽器可能會擋自動播放；玩家按音樂按鈕或下一次互動後會再嘗試。
+        });
+      }
+    } else {
+      audio.pause();
+    }
+  }, [screen, ending, musicOn, volume, event?.id]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio && ending) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [ending]);
 
   function startWith(c) {
     if (!c.playable) return;
@@ -190,6 +220,10 @@ export default function App() {
   }
 
   function reset() {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     setScreen('home');
     setCharacter(null);
     setEvent(null);
@@ -202,8 +236,9 @@ export default function App() {
   if (screen === 'home') {
     return (
       <main className="app">
+        <audio ref={audioRef} src={battleMusic} loop preload="auto" />
         <section className="hero">
-          <div className="badge">611研究室 v1.6</div>
+          <div className="badge">611研究室 v1.7</div>
           <h1>因為不想改論文<br />我把技能全加在退件防禦了</h1>
           <p>事件相剋型生存卡牌遊戲。選擇角色，用三個技能撐過隨機事件，活著抵達華衫論壇。</p>
         </section>
@@ -220,9 +255,27 @@ export default function App() {
 
   return (
     <main className="app">
+      <audio ref={audioRef} src={battleMusic} loop preload="auto" />
       <header className="topbar">
         <div><strong>{character.name}</strong><span>｜{character.title}</span></div>
-        <button className="ghost" onClick={reset}><RotateCcw size={16} />重新開始</button>
+        <div className="topbarActions">
+          <button className="ghost" onClick={() => setMusicOn((v) => !v)}>
+            {musicOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            {musicOn ? '音樂開' : '音樂關'}
+          </button>
+          <label className="volumeControl">
+            音量
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={(e) => setVolume(Number(e.target.value))}
+            />
+          </label>
+          <button className="ghost" onClick={reset}><RotateCcw size={16} />重新開始</button>
+        </div>
       </header>
 
       {ending ? <EndingScreen ending={ending} onReset={reset} /> : (

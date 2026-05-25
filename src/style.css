@@ -60,3 +60,9 @@ button{font:inherit}
 
 @media(max-width:1100px){.gameLayout.withBoss{grid-template-columns:220px 1fr}.bossSidebar{position:relative;top:auto;grid-column:1 / -1;display:grid;grid-template-columns:180px 1fr;margin-bottom:18px}.bossSidebar img{height:240px;aspect-ratio:auto}.bossText h2{font-size:26px}}
 @media(max-width:760px){.gameLayout.withBoss{display:block}.bossSidebar{display:grid;grid-template-columns:120px 1fr;margin-bottom:18px}.bossSidebar img{height:180px;aspect-ratio:auto}.bossBadge{font-size:12px}}
+
+/* v1.7 battle music controls */
+.topbarActions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.volumeControl{display:inline-flex;align-items:center;gap:8px;border:1px solid #9e7a35;background:#111823;color:#f8efe0;border-radius:12px;padding:9px 12px;font-size:14px}
+.volumeControl input{width:110px;accent-color:#e0b258}
+@media(max-width:760px){.topbarActions{justify-content:flex-start}.volumeControl input{width:92px}}
