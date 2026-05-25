@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { RotateCcw, Sparkles, BookOpen, Lock } from 'lucide-react';
+import { RotateCcw, Sparkles, BookOpen } from 'lucide-react';
 import { characters, events, resultText } from './gameData';
 import endingOverview from './assets/endings/ending-overview.png';
 import './style.css';
 
 const shuffleArray = (arr) => [...arr].sort(() => Math.random() - 0.5);
 const playableCharacters = characters.filter((c) => c.playable);
-const bossCharacters = characters.filter((c) => !c.playable);
 
 function resolveChoice(event, skillId) {
   if (event.secret?.includes(skillId)) return 'PERFECT';
@@ -17,6 +16,7 @@ function resolveChoice(event, skillId) {
 }
 
 function resultLine(character, skill, event, result) {
+  const bossPrefix = event.boss === 'mary' ? '瑪莉教授的教鞭在黑板上敲出刺耳聲響。' : '';
   const lines = {
     chen: {
       PERFECT: '陳研究生的黑眼圈發出金光：這不是修正，這是反擊。',
@@ -47,15 +47,14 @@ function resultLine(character, skill, event, result) {
       REJECT: '老莫冷笑：這種東西，我以前看多了。退件。',
     },
   };
-  return lines[character.id]?.[result] || `${character.name}使用《${skill.name}》處理了「${event.title}」。`;
+  return `${bossPrefix}${lines[character.id]?.[result] || `${character.name}使用《${skill.name}》處理了「${event.title}」。`}`;
 }
 
-function CharacterImageCard({ c, onClick, disabled = false }) {
-  const content = (
-    <>
+function CharacterImageCard({ c, onClick }) {
+  return (
+    <button className="card characterCard" onClick={onClick}>
       <div className="imageWrap">
         <img src={c.image} alt={c.name} />
-        {!c.playable && <div className="locked"><Lock size={16} />事件Boss</div>}
       </div>
       <div className="characterInfo">
         <h3>{c.name}</h3>
@@ -65,11 +64,23 @@ function CharacterImageCard({ c, onClick, disabled = false }) {
           {c.skills.map((s) => <span key={s.id}>{s.name}</span>)}
         </div>
       </div>
-    </>
+    </button>
   );
+}
 
-  if (disabled) return <div className="card characterCard disabledCard">{content}</div>;
-  return <button className="card characterCard" onClick={onClick}>{content}</button>;
+function BossCard({ boss, event }) {
+  if (!boss) return null;
+  return (
+    <aside className="bossSidebar">
+      <div className="bossBadge">事件 Boss 登場</div>
+      <img src={boss.image} alt={boss.name} />
+      <div className="bossText">
+        <h2>{boss.name}</h2>
+        <p>{boss.title}</p>
+        <small>「{event.bossQuote || boss.quote}」</small>
+      </div>
+    </aside>
+  );
 }
 
 function getEnding(history) {
@@ -85,38 +96,15 @@ function getEnding(history) {
   const hardPasses = counts.HARD_PASS || 0;
 
   if (strongWins >= 5) {
-    return {
-      key: 'pass',
-      title: '論文通過｜順利畢業',
-      subtitle: '你終於逃離611研究室。',
-      quote: '「終於……自由了！」',
-    };
+    return { key: 'pass', title: '論文通過｜順利畢業', subtitle: '你終於逃離611研究室。', quote: '「終於……自由了！」' };
   }
-
   if (collapses >= 3) {
-    return {
-      key: 'collapse',
-      title: '研究崩潰｜精神炸裂',
-      subtitle: '論文開始反過來寫你。',
-      quote: '「我還要再改多久……？」',
-    };
+    return { key: 'collapse', title: '研究崩潰｜精神炸裂', subtitle: '論文開始反過來寫你。', quote: '「我還要再改多久……？」' };
   }
-
   if (hardPasses >= 4) {
-    return {
-      key: 'dropout',
-      title: '受不了壓榨｜選擇退學',
-      subtitle: '你離開了這場無止盡的壓力。',
-      quote: '「我才不要一輩子當研究生！」',
-    };
+    return { key: 'dropout', title: '受不了壓榨｜選擇退學', subtitle: '你離開了這場無止盡的壓力。', quote: '「我才不要一輩子當研究生！」' };
   }
-
-  return {
-    key: 'reject',
-    title: '論文沒通過｜延後畢業',
-    subtitle: '下一次，再努力一點吧……',
-    quote: '「再改一次就好……再改一次就好……」',
-  };
+  return { key: 'reject', title: '論文沒通過｜延後畢業', subtitle: '下一次，再努力一點吧……', quote: '「再改一次就好……再改一次就好……」' };
 }
 
 function EndingScreen({ ending, onReset }) {
@@ -133,7 +121,6 @@ function EndingScreen({ ending, onReset }) {
         <h1 style={styles.endingTitle}>{ending.title}</h1>
         <p style={styles.endingSubtitle}>{ending.subtitle}</p>
       </div>
-
       <div style={styles.imageStage}>
         <img src={endingOverview} alt="挑戰結果" style={styles.endingImage} />
         {slots.map((slot) => {
@@ -155,7 +142,6 @@ function EndingScreen({ ending, onReset }) {
           );
         })}
       </div>
-
       <p style={styles.endingQuote}>{ending.quote}</p>
       <button className="primary" onClick={onReset}>回首頁</button>
     </section>
@@ -172,6 +158,7 @@ export default function App() {
   const [result, setResult] = useState(null);
 
   const ending = useMemo(() => getEnding(history), [history]);
+  const activeBoss = event?.boss ? characters.find((c) => c.id === event.boss) : null;
 
   function startWith(c) {
     if (!c.playable) return;
@@ -216,29 +203,16 @@ export default function App() {
     return (
       <main className="app">
         <section className="hero">
-          <div className="badge">611研究室 v1.5</div>
+          <div className="badge">611研究室 v1.6</div>
           <h1>因為不想改論文<br />我把技能全加在退件防禦了</h1>
           <p>事件相剋型生存卡牌遊戲。選擇角色，用三個技能撐過隨機事件，活著抵達華衫論壇。</p>
         </section>
-
         <div className="sectionTitle">
           <h2>選擇角色</h2>
-          <p>瑪莉教授目前作為事件 Boss，不開放選擇。</p>
+          <p>瑪莉教授已改為事件 Boss，只會在教授系事件中登場。</p>
         </div>
-
         <div className="characterGrid playableGrid">
-          {playableCharacters.map((c) => (
-            <CharacterImageCard key={c.id} c={c} onClick={() => startWith(c)} />
-          ))}
-        </div>
-
-        <div className="sectionTitle bossTitle">
-          <h2>事件 Boss</h2>
-        </div>
-        <div className="characterGrid bossGrid">
-          {bossCharacters.map((c) => (
-            <CharacterImageCard key={c.id} c={c} disabled />
-          ))}
+          {playableCharacters.map((c) => <CharacterImageCard key={c.id} c={c} onClick={() => startWith(c)} />)}
         </div>
       </main>
     );
@@ -247,17 +221,14 @@ export default function App() {
   return (
     <main className="app">
       <header className="topbar">
-        <div>
-          <strong>{character.name}</strong><span>｜{character.title}</span>
-        </div>
+        <div><strong>{character.name}</strong><span>｜{character.title}</span></div>
         <button className="ghost" onClick={reset}><RotateCcw size={16} />重新開始</button>
       </header>
 
-      {ending ? (
-        <EndingScreen ending={ending} onReset={reset} />
-      ) : (
-        <div className="gameLayout">
+      {ending ? <EndingScreen ending={ending} onReset={reset} /> : (
+        <div className={`gameLayout ${activeBoss ? 'withBoss' : ''}`}>
           <aside className="playerSidebar">
+            <div className="sideLabel">玩家角色</div>
             <img src={character.image} alt={character.name} />
             <div className="sidebarText">
               <h2>{character.name}</h2>
@@ -267,10 +238,11 @@ export default function App() {
           </aside>
 
           <section className="gameMain">
-            <section className="panel eventPanel">
+            <section className={`panel eventPanel ${activeBoss ? 'bossEventPanel' : ''}`}>
               <div className="round">第 {round} 週事件</div>
               <h1>{event.title}</h1>
               <p>{event.text}</p>
+              {activeBoss && <div className="bossNotice">瑪莉教授事件觸發：壓力上升</div>}
             </section>
 
             {!result ? (
@@ -300,6 +272,8 @@ export default function App() {
               ))}
             </section>
           </section>
+
+          {activeBoss && <BossCard boss={activeBoss} event={event} />}
         </div>
       )}
     </main>
@@ -307,50 +281,12 @@ export default function App() {
 }
 
 const styles = {
-  endingPanel: {
-    maxWidth: '1180px',
-    margin: '0 auto',
-    padding: '24px',
-    textAlign: 'center',
-  },
-  endingHeader: {
-    marginBottom: '18px',
-  },
-  endingTitle: {
-    margin: 0,
-    color: '#f5d06f',
-    fontSize: 'clamp(28px, 5vw, 52px)',
-    letterSpacing: '0.06em',
-  },
-  endingSubtitle: {
-    color: '#d8c7a0',
-    fontSize: '18px',
-  },
-  imageStage: {
-    position: 'relative',
-    width: '100%',
-    border: '1px solid rgba(245, 208, 111, 0.45)',
-    borderRadius: '18px',
-    overflow: 'hidden',
-    background: '#050505',
-  },
-  endingImage: {
-    width: '100%',
-    display: 'block',
-  },
-  endingSlot: {
-    position: 'absolute',
-    top: '13.5%',
-    width: '23.4%',
-    height: '74%',
-    borderRadius: '12px',
-    transition: 'all 0.3s ease',
-    pointerEvents: 'none',
-  },
-  endingQuote: {
-    margin: '20px auto',
-    color: '#f3d27a',
-    fontSize: '22px',
-    fontWeight: 700,
-  },
+  endingPanel: { maxWidth: '1180px', margin: '0 auto', padding: '24px', textAlign: 'center' },
+  endingHeader: { marginBottom: '18px' },
+  endingTitle: { margin: 0, color: '#f5d06f', fontSize: 'clamp(28px, 5vw, 52px)', letterSpacing: '0.06em' },
+  endingSubtitle: { color: '#d8c7a0', fontSize: '18px' },
+  imageStage: { position: 'relative', width: '100%', border: '1px solid rgba(245, 208, 111, 0.45)', borderRadius: '18px', overflow: 'hidden', background: '#050505' },
+  endingImage: { width: '100%', display: 'block' },
+  endingSlot: { position: 'absolute', top: '13.5%', width: '23.4%', height: '74%', borderRadius: '12px', transition: 'all 0.3s ease', pointerEvents: 'none' },
+  endingQuote: { margin: '20px auto', color: '#f3d27a', fontSize: '22px', fontWeight: 700 },
 };
