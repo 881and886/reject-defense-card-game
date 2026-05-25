@@ -4,7 +4,7 @@ import { characters, events, resultText } from './gameData';
 import endingOverview from './assets/endings/ending-overview.png';
 import './style.css';
 
-const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffleArray = (arr) => [...arr].sort(() => Math.random() - 0.5);
 const playableCharacters = characters.filter((c) => c.playable);
 const bossCharacters = characters.filter((c) => !c.playable);
 
@@ -121,10 +121,10 @@ function getEnding(history) {
 
 function EndingScreen({ ending, onReset }) {
   const slots = [
-    { key: 'reject', left: '0%', color: '#ef4444' },
-    { key: 'pass', left: '25%', color: '#f5c542' },
-    { key: 'dropout', left: '50%', color: '#7c8cff' },
-    { key: 'collapse', left: '75%', color: '#b45cff' },
+    { key: 'reject', left: '2.4%', color: '#ef4444' },
+    { key: 'pass', left: '26.1%', color: '#f5c542' },
+    { key: 'dropout', left: '49.8%', color: '#7c8cff' },
+    { key: 'collapse', left: '73.5%', color: '#b45cff' },
   ];
 
   return (
@@ -146,9 +146,9 @@ function EndingScreen({ ending, onReset }) {
                 left: slot.left,
                 opacity: active ? 1 : 0.62,
                 background: active ? 'transparent' : 'rgba(0,0,0,0.62)',
-                border: active ? `4px solid ${slot.color}` : '1px solid rgba(255,255,255,0.08)',
-                boxShadow: active ? `0 0 38px ${slot.color}, inset 0 0 30px ${slot.color}55` : 'none',
-                transform: active ? 'scale(1.025)' : 'scale(1)',
+                border: active ? `3px solid ${slot.color}` : '1px solid rgba(255,255,255,0.05)',
+                boxShadow: active ? `0 0 34px ${slot.color}, inset 0 0 24px ${slot.color}44` : 'none',
+                transform: active ? 'scale(1.015)' : 'scale(1)',
                 zIndex: active ? 3 : 2,
               }}
             />
@@ -166,6 +166,7 @@ export default function App() {
   const [screen, setScreen] = useState('home');
   const [character, setCharacter] = useState(null);
   const [event, setEvent] = useState(null);
+  const [eventDeck, setEventDeck] = useState([]);
   const [history, setHistory] = useState([]);
   const [round, setRound] = useState(1);
   const [result, setResult] = useState(null);
@@ -174,8 +175,10 @@ export default function App() {
 
   function startWith(c) {
     if (!c.playable) return;
+    const deck = shuffleArray(events);
     setCharacter(c);
-    setEvent(pickRandom(events));
+    setEvent(deck[0]);
+    setEventDeck(deck.slice(1));
     setHistory([]);
     setRound(1);
     setResult(null);
@@ -191,7 +194,11 @@ export default function App() {
 
   function nextRound() {
     setRound((r) => r + 1);
-    setEvent(pickRandom(events));
+    setEventDeck((deck) => {
+      const freshDeck = deck.length > 0 ? deck : shuffleArray(events);
+      setEvent(freshDeck[0]);
+      return freshDeck.slice(1);
+    });
     setResult(null);
   }
 
@@ -199,6 +206,7 @@ export default function App() {
     setScreen('home');
     setCharacter(null);
     setEvent(null);
+    setEventDeck([]);
     setHistory([]);
     setRound(1);
     setResult(null);
@@ -208,7 +216,7 @@ export default function App() {
     return (
       <main className="app">
         <section className="hero">
-          <div className="badge">611研究室 v1.4</div>
+          <div className="badge">611研究室 v1.5</div>
           <h1>因為不想改論文<br />我把技能全加在退件防禦了</h1>
           <p>事件相剋型生存卡牌遊戲。選擇角色，用三個技能撐過隨機事件，活著抵達華衫論壇。</p>
         </section>
@@ -332,9 +340,10 @@ const styles = {
   },
   endingSlot: {
     position: 'absolute',
-    top: 0,
-    width: '25%',
-    height: '100%',
+    top: '13.5%',
+    width: '23.4%',
+    height: '74%',
+    borderRadius: '12px',
     transition: 'all 0.3s ease',
     pointerEvents: 'none',
   },
