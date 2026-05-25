@@ -1,0 +1,126 @@
+export const characters = [
+  {
+    id: 'chen',
+    name: '陳研究生',
+    title: '退件防禦者',
+    quote: '我今天不想改論文，我只想活下去。',
+    style: '高風險爆發型',
+    skills: [
+      { id: 'reject', name: 'Reject', desc: '強行退件不合理要求。' },
+      { id: 'ok', name: 'OK', desc: '表面接受，實際讓內容作廢重來。' },
+      { id: 'deadline', name: '最後一天趕稿', desc: '在崩潰邊緣爆發求生力。' },
+    ],
+  },
+  {
+    id: 'shihan',
+    name: '詩涵',
+    title: '班導戰士',
+    quote: '全部安靜，先解決問題再說。',
+    style: '穩定防禦型',
+    skills: [
+      { id: 'order', name: '秩序壓制', desc: '讓混亂場面強制安定。' },
+      { id: 'teacherAura', name: '班導威壓', desc: '以班導氣場降低事件危險度。' },
+      { id: 'muscleGuard', name: '肌肉防禦', desc: '硬扛壓力，保護隊伍不崩潰。' },
+    ],
+  },
+  {
+    id: 'shuya',
+    name: '書雅',
+    title: '智慧隊長',
+    quote: '理論不夠深，你的論文就像空殼。',
+    style: '分析解題型',
+    skills: [
+      { id: 'logic', name: '邏輯分析', desc: '拆解問題核心，找出合理解法。' },
+      { id: 'review', name: '文獻回顧', desc: '快速找到關鍵文獻，補足理論支持。' },
+      { id: 'reframe', name: '跳脫框架', desc: '打破既有思維，創造新的可能性。' },
+    ],
+  },
+  {
+    id: 'laomo',
+    name: '老莫',
+    title: '叛逆法師',
+    quote: '誰想加班？下班時間到了！',
+    style: '混亂奇招型',
+    skills: [
+      { id: 'void', name: '放空結界', desc: '進入放空狀態，無視煩人事項。' },
+      { id: 'offwork', name: '下班時間到了', desc: '強制中斷事件，讓對方無法再追加。' },
+      { id: 'spark', name: '叛逆火花', desc: '點燃不可預測的叛逆結果。' },
+    ],
+  },
+];
+
+export const events = [
+  {
+    id: 'extraHomework',
+    title: '瑪莉教授新增作業',
+    text: '「好！本週報告從三份變成五份，順便補一份十頁反思。」',
+    best: ['reject'],
+    good: ['ok', 'teacherAura', 'offwork'],
+    risky: ['deadline', 'spark'],
+  },
+  {
+    id: 'theoryBeast',
+    title: '理論支持不足之獸',
+    text: '遠古巨獸質問：你的研究動機是什麼？理論依據在哪裡？',
+    best: ['review'],
+    good: ['logic', 'reframe', 'muscleGuard'],
+    risky: ['reject', 'spark'],
+  },
+  {
+    id: 'line99',
+    title: '611群組99+',
+    text: '群組通知瘋狂跳出，玲玲玲學姐又發起了邏輯詭異的投票。',
+    best: ['offwork'],
+    good: ['void', 'logic', 'order'],
+    risky: ['spark', 'deadline'],
+  },
+  {
+    id: 'apaHell',
+    title: 'APA格式地獄',
+    text: '參考文獻縮排、標點、斜體與年份全部開始反噬。',
+    best: ['logic', 'review'],
+    good: ['deadline', 'ok'],
+    risky: ['reject', 'spark'],
+  },
+  {
+    id: 'methodLost',
+    title: '研究法還沒決定',
+    text: '量化、質性、行動研究、敘事研究在腦內打成一團。',
+    best: ['logic'],
+    good: ['review', 'reframe'],
+    secret: ['offwork'],
+    risky: ['reject', 'deadline'],
+  },
+  {
+    id: 'classChaos',
+    title: '課堂秩序失控',
+    text: '研究室裡同袍集體精神內耗，討論開始歪樓。',
+    best: ['order'],
+    good: ['teacherAura', 'muscleGuard', 'logic'],
+    risky: ['spark'],
+  },
+  {
+    id: 'proposalCountdown',
+    title: '華衫論壇倒數',
+    text: '血色沙漏開始倒數，所有人突然意識到計畫書還沒完成。',
+    best: ['deadline'],
+    good: ['review', 'order', 'void'],
+    risky: ['ok', 'spark'],
+  },
+  {
+    id: 'cameraCrystal',
+    title: '深淵顯影水晶錄影',
+    text: '瑪莉教授啟動全程錄影，準備把研究成果占為己有。',
+    best: ['reject'],
+    good: ['logic', 'order', 'offwork'],
+    risky: ['void'],
+  },
+];
+
+export const resultText = {
+  PERFECT: '神解！事件被你用最漂亮的方式破解。',
+  PASS: '成功撐過這一週，雖然靈魂有點皺。',
+  HARD_PASS: '勉強活下來，但研究室裡的燈又暗了一點。',
+  REJECT: '退件成功！不合理的東西被轟回原點。',
+  COLLAPSE: '崩潰！你感覺論文正在反過來寫你。',
+};
