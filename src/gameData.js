@@ -1,50 +1,78 @@
+import chenImg from './assets/characters/chen.png';
+import shihanImg from './assets/characters/shihan.png';
+import shuyaImg from './assets/characters/shuya.png';
+import laomoImg from './assets/characters/laomo.png';
+import maryImg from './assets/characters/mary.png';
+
 export const characters = [
   {
     id: 'chen',
+    playable: true,
     name: '陳研究生',
     title: '退件防禦者',
     quote: '我今天不想改論文，我只想活下去。',
     style: '高風險爆發型',
+    image: chenImg,
     skills: [
-      { id: 'reject', name: 'Reject', desc: '強行退件不合理要求。' },
-      { id: 'ok', name: 'OK', desc: '表面接受，實際讓內容作廢重來。' },
-      { id: 'deadline', name: '最後一天趕稿', desc: '在崩潰邊緣爆發求生力。' },
+      { id: 'reject', name: 'Reject', desc: '強制退件（高風險）' },
+      { id: 'ok', name: 'OK', desc: '偽裝接受（穩定）' },
+      { id: 'deadline', name: '最後一天趕稿', desc: '短時間爆發（高代價）' },
     ],
   },
   {
     id: 'shihan',
+    playable: true,
     name: '詩涵',
     title: '班導戰士',
     quote: '全部安靜，先解決問題再說。',
     style: '穩定防禦型',
+    image: shihanImg,
     skills: [
-      { id: 'order', name: '秩序壓制', desc: '讓混亂場面強制安定。' },
-      { id: 'teacherAura', name: '班導威壓', desc: '以班導氣場降低事件危險度。' },
-      { id: 'muscleGuard', name: '肌肉防禦', desc: '硬扛壓力，保護隊伍不崩潰。' },
+      { id: 'order', name: '秩序壓制', desc: '穩定局勢' },
+      { id: 'teacherAura', name: '班導威壓', desc: '降低危險' },
+      { id: 'muscleGuard', name: '肌肉防禦', desc: '硬扛壓力' },
     ],
   },
   {
     id: 'shuya',
+    playable: true,
     name: '書雅',
     title: '智慧隊長',
     quote: '理論不夠深，你的論文就像空殼。',
     style: '分析解題型',
+    image: shuyaImg,
     skills: [
-      { id: 'logic', name: '邏輯分析', desc: '拆解問題核心，找出合理解法。' },
-      { id: 'review', name: '文獻回顧', desc: '快速找到關鍵文獻，補足理論支持。' },
-      { id: 'reframe', name: '跳脫框架', desc: '打破既有思維，創造新的可能性。' },
+      { id: 'logic', name: '邏輯分析', desc: '拆解事件' },
+      { id: 'review', name: '文獻回顧', desc: '提升成功率' },
+      { id: 'reframe', name: '跳脫框架', desc: '低機率神解' },
     ],
   },
   {
     id: 'laomo',
+    playable: true,
     name: '老莫',
     title: '叛逆法師',
     quote: '誰想加班？下班時間到了！',
     style: '混亂奇招型',
+    image: laomoImg,
     skills: [
-      { id: 'void', name: '放空結界', desc: '進入放空狀態，無視煩人事項。' },
-      { id: 'offwork', name: '下班時間到了', desc: '強制中斷事件，讓對方無法再追加。' },
-      { id: 'spark', name: '叛逆火花', desc: '點燃不可預測的叛逆結果。' },
+      { id: 'void', name: '放空結界', desc: '無視事件' },
+      { id: 'offwork', name: '下班時間到了', desc: '強制結束' },
+      { id: 'spark', name: '叛逆火花', desc: '未知結果' },
+    ],
+  },
+  {
+    id: 'mary',
+    playable: false,
+    name: '瑪莉教授',
+    title: '研究法支配者',
+    quote: '好！這週新增二份報告！',
+    style: '事件Boss｜目前不可選',
+    image: maryImg,
+    skills: [
+      { id: 'extra', name: '新增作業', desc: '增加壓力' },
+      { id: 'observe', name: '深淵觀測', desc: '監控進度' },
+      { id: 'pressure', name: '學術壓制', desc: '精神壓迫' },
     ],
   },
 ];
